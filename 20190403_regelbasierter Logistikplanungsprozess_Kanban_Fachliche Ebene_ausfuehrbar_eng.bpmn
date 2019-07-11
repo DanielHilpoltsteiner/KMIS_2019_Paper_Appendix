@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.16.2">
+  <bpmn:process id="Process_LogisticsPlanning" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_1onnlc8</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="UserTask_QuelleSenke" name="definition of relevant cycles (Source/ Sink)">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_QuelleSenke" label="Source / Sink" type="enum">
+            <camunda:value id="Value_1" name="stock-supermarket / supermarket" />
+            <camunda:value id="Value_2" name="production/ production" />
+            <camunda:value id="Value_3" name="production/ output" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0siqxi9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1obvkjt</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_0j09jzz">
+      <bpmn:incoming>SequenceFlow_1t7fckq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0w5iwrp">
+      <bpmn:incoming>SequenceFlow_040i3an</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_19psber</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1t7fckq</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_07xrq44" name="check for integer devision">
+      <bpmn:incoming>SequenceFlow_1y89xhd</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1obbhxp</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1dgur3f</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_1i4rsri">
+      <bpmn:incoming>SequenceFlow_17iyg64</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_161rk16">
+      <bpmn:incoming>SequenceFlow_0v48kxn</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0siqxi9</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_17iyg64</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0v48kxn" sourceRef="ManualTask_KanBanPruefung" targetRef="ExclusiveGateway_161rk16" />
+    <bpmn:sequenceFlow id="SequenceFlow_0siqxi9" name="process is suited for KANBAN" sourceRef="ExclusiveGateway_161rk16" targetRef="UserTask_QuelleSenke">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FormField_genehmigt}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_19psber" name="yes" sourceRef="ExclusiveGateway_0w5iwrp" targetRef="Task_VerpackungAnpassen">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FormField_Verpackung}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0q02aax" sourceRef="Task_VerpackungAnpassen" targetRef="Task_Kanbanart" />
+    <bpmn:sequenceFlow id="SequenceFlow_1t7fckq" name="no" sourceRef="ExclusiveGateway_0w5iwrp" targetRef="EndEvent_0j09jzz">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!FormField_Verpackung}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_040i3an" sourceRef="Task_Verpackung" targetRef="ExclusiveGateway_0w5iwrp" />
+    <bpmn:sequenceFlow id="SequenceFlow_1obbhxp" name="no" sourceRef="ExclusiveGateway_07xrq44" targetRef="Task_Verpackung">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!FormField_losgenehmigt}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1y89xhd" sourceRef="Task_losgroessepruefen" targetRef="ExclusiveGateway_07xrq44" />
+    <bpmn:sequenceFlow id="SequenceFlow_1dgur3f" name="yes" sourceRef="ExclusiveGateway_07xrq44" targetRef="Task_Kanbanart">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FormField_losgenehmigt}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_17iyg64" name="abort process" sourceRef="ExclusiveGateway_161rk16" targetRef="EndEvent_1i4rsri">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!FormField_genehmigt}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0uh8j62">
+      <bpmn:incoming>SequenceFlow_1c97sgs</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1m8j6rq</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0p6fi9t</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_04gup6i" sourceRef="ManualTask_0vzt72y" targetRef="Task_0k85mrn" />
+    <bpmn:sequenceFlow id="SequenceFlow_1c97sgs" sourceRef="UserTask_0wjvv4c" targetRef="ExclusiveGateway_0uh8j62" />
+    <bpmn:sequenceFlow id="SequenceFlow_1m8j6rq" name="&#62;consumption rate" sourceRef="ExclusiveGateway_0uh8j62" targetRef="Task_0717n0u">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${Verbrauchsrate &gt; 500}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0p6fi9t" name="&#60;=consumption rate" sourceRef="ExclusiveGateway_0uh8j62" targetRef="Task_1plhske">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${Verbrauchsrate &lt;= 500}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1t4wsb4" sourceRef="Task_0717n0u" targetRef="ManualTask_0vzt72y" />
+    <bpmn:sequenceFlow id="SequenceFlow_1up24zl" sourceRef="Task_1plhske" targetRef="ManualTask_0vzt72y" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1upne06">
+      <bpmn:incoming>SequenceFlow_0do4do3</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17otxkt</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1oadbps</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1nm3qke">
+      <bpmn:incoming>SequenceFlow_1ympmzt</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_07zwwuj</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_005g394</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_01jg7t8</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:manualTask id="ManualTask_00da5a3" name="lablel KANBAN containers with cards">
+      <bpmn:incoming>SequenceFlow_0wu81g3</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1nrixbe</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:endEvent id="EndEvent_0fgld5j">
+      <bpmn:incoming>SequenceFlow_1721lrq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_17otxkt" name="technology in place" sourceRef="ExclusiveGateway_1upne06" targetRef="Task_0f279vt">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FormField_TechnologieVorhanden}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1nrixbe" sourceRef="ManualTask_00da5a3" targetRef="Task_0f279vt" />
+    <bpmn:sequenceFlow id="SequenceFlow_1721lrq" sourceRef="Task_0f279vt" targetRef="EndEvent_0fgld5j" />
+    <bpmn:sequenceFlow id="SequenceFlow_18ir4r6" sourceRef="Task_1t2gu1u" targetRef="Task_19hyx7s" />
+    <bpmn:sequenceFlow id="SequenceFlow_07zwwuj" name="B-Kanban" sourceRef="ExclusiveGateway_1nm3qke" targetRef="Task_1t2gu1u">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FormField_Kanbanart == 'Value_KanbanB'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_005g394" name="E-Kanban " sourceRef="ExclusiveGateway_1nm3qke" targetRef="UserTask_1d76qva">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FormField_Kanbanart == 'Value_KanbanE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_01jg7t8" name="K-Kanban" sourceRef="ExclusiveGateway_1nm3qke" targetRef="Task_01wztrt">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FormField_Kanbanart == 'Value_KanbanK'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1ympmzt" sourceRef="Task_0k85mrn" targetRef="ExclusiveGateway_1nm3qke" />
+    <bpmn:sequenceFlow id="SequenceFlow_1onnlc8" sourceRef="StartEvent_1" targetRef="Task_Teilenummereingeben" />
+    <bpmn:userTask id="Task_Teilenummereingeben" name="enter part no.">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_Teilenummer" label="part no." type="string" defaultValue="XXX-4711" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1onnlc8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_10pp17d</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_10pp17d" sourceRef="Task_Teilenummereingeben" targetRef="Task_Datenbankabfragen" />
+    <bpmn:sequenceFlow id="SequenceFlow_177nr6o" sourceRef="Task_Datenbankabfragen" targetRef="ManualTask_KanBanPruefung" />
+    <bpmn:serviceTask id="Task_Datenbankabfragen" name="database query" camunda:expression="${500}" camunda:resultVariable="Output_Verbrauch">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="Output_Kategorie">AX</camunda:outputParameter>
+          <camunda:outputParameter name="Output_Dispositionsverfahren">Just-In-Time</camunda:outputParameter>
+          <camunda:outputParameter name="Output_Kanbangeeignet">true</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_10pp17d</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_177nr6o</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="ManualTask_KanBanPruefung" name="check if part is suited for KANBAN">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_Teilenummer" label="part no." type="string" />
+          <camunda:formField id="Output_Kategorie" label="category" type="string" />
+          <camunda:formField id="Output_Dispositionsverfahren" label="disposition process" type="string" />
+          <camunda:formField id="FormField_genehmigt" label="suited for KANBAN?" type="boolean" defaultValue="${Output_Kanbangeeignet == &#34;true&#34;}" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_177nr6o</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0v48kxn</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1obvkjt" sourceRef="UserTask_QuelleSenke" targetRef="Task_losgroesseabfragen" />
+    <bpmn:sequenceFlow id="SequenceFlow_0cxh3o2" sourceRef="Task_losgroesseabfragen" targetRef="Task_losgroessepruefen" />
+    <bpmn:serviceTask id="Task_losgroesseabfragen" name="query lot size" camunda:expression="${5}" camunda:resultVariable="losgroesse">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="Output_1i1gl9m" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1obvkjt</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0cxh3o2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_losgroessepruefen" name="compare lot size and packaging size">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_losgroesse" label="lot size" type="long" defaultValue="${losgroesse}" />
+          <camunda:formField id="FormField_losgenehmigt" label="accepted?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0cxh3o2</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1y89xhd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_Verpackung" name="check if packaging size can be corrected">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_Verpackung" label="container ajustable?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1obbhxp</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_040i3an</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_Kanbanart" name="select KANBAN type">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_Kanbanart" label="KANBAN type" type="enum">
+            <camunda:value id="Value_KanbanE" name="E-Kanban" />
+            <camunda:value id="Value_KanbanK" name="K-Kanban" />
+            <camunda:value id="Value_KanbanB" name="B-Kanban" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0q02aax</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1dgur3f</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0jl451u</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:businessRuleTask id="Task_0dz7s5l" name="calculate replacement time" camunda:resultVariable="Output_Wiederbeschaffungszeit" camunda:decisionRef="KanbanWiederbeschaffungszeit" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>SequenceFlow_17m7dx9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0aaysvz</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0aaysvz" sourceRef="Task_0dz7s5l" targetRef="UserTask_0wjvv4c" />
+    <bpmn:serviceTask id="UserTask_0wjvv4c" name="calculate consumption rate" camunda:expression="500" camunda:resultVariable="Verbrauchsrate">
+      <bpmn:incoming>SequenceFlow_0aaysvz</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1c97sgs</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_0717n0u" name="V1: order triggered by reporting point" camunda:expression="&#39;Meldepunkt&#39;" camunda:resultVariable="Bestellausloesung">
+      <bpmn:incoming>SequenceFlow_1m8j6rq</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1t4wsb4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_1plhske" name="V2: order triggered by container (KANBAN)" camunda:expression="&#39;Behaelter&#39;" camunda:resultVariable="Bestellausloesung">
+      <bpmn:incoming>SequenceFlow_0p6fi9t</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1up24zl</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="ManualTask_0vzt72y" name="input security factor">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_Sicherheitsfaktor" label="security factor (amount)" type="long" />
+        </camunda:formData>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="Output_3did9jk" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1t4wsb4</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1up24zl</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_04gup6i</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_0k85mrn" name="calculation of required amount" camunda:expression="${ Output_Verbrauch * Output_Wiederbeschaffungszeit * FormField_Sicherheitsfaktor}" camunda:resultVariable="Output_Menge">
+      <bpmn:incoming>SequenceFlow_04gup6i</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ympmzt</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_00npfk6" sourceRef="Task_19hyx7s" targetRef="Task_0f279vt" />
+    <bpmn:serviceTask id="Task_01wztrt" name="print KANBAN cards" camunda:expression="true" camunda:resultVariable="Output_Printfinished">
+      <bpmn:incoming>SequenceFlow_01jg7t8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0wu81g3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:manualTask id="Task_1t2gu1u" name="labeling KANBA containers">
+      <bpmn:incoming>SequenceFlow_07zwwuj</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_18ir4r6</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:manualTask id="Task_19hyx7s" name="incorporating containers into the system">
+      <bpmn:incoming>SequenceFlow_18ir4r6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_00npfk6</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:serviceTask id="Task_0f279vt" name="information to tugger train driver" camunda:expression="true" camunda:resultVariable="Output_RoutenzugfahrerBenachrichtigt">
+      <bpmn:incoming>SequenceFlow_1nrixbe</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_00npfk6</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_17otxkt</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1721lrq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:manualTask id="Task_VerpackungAnpassen" name="correct packaging size">
+      <bpmn:incoming>SequenceFlow_19psber</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0q02aax</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0wu81g3" sourceRef="Task_01wztrt" targetRef="ManualTask_00da5a3" />
+    <bpmn:userTask id="UserTask_0s59bvp" name="parameter input for replacement time">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_InformationsUebermittlung" label="information time (minutes)" type="long" />
+          <camunda:formField id="FormField_Nachproduktion" label="replacement time (minutes)" type="long" />
+          <camunda:formField id="FormField_Transport" label="transportation time(minutes)" type="long" />
+          <camunda:formField id="FormField_QuelleSenke" label="source / sink" type="enum" defaultValue="${FormField_QuelleSenke}">
+            <camunda:value id="Value_1" name="stock-supermarket / supermarket" />
+            <camunda:value id="Value_2" name="production- supermarket" />
+            <camunda:value id="Value_3" name="production / production" />
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1oadbps</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0jl451u</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17m7dx9</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_17m7dx9" sourceRef="UserTask_0s59bvp" targetRef="Task_0dz7s5l" />
+    <bpmn:sequenceFlow id="SequenceFlow_1oadbps" name="technology not in place" sourceRef="ExclusiveGateway_1upne06" targetRef="UserTask_0s59bvp">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!FormField_TechnologieVorhanden}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0jl451u" sourceRef="Task_Kanbanart" targetRef="UserTask_0s59bvp" />
+    <bpmn:userTask id="UserTask_1d76qva" name="check if technology is in place">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_TechnologieVorhanden" label="technology in place?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_005g394</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0do4do3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0do4do3" sourceRef="UserTask_1d76qva" targetRef="ExclusiveGateway_1upne06" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_LogisticsPlanning">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="184" y="466" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="162" y="374" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_19eqapa_di" bpmnElement="UserTask_QuelleSenke">
+        <dc:Bounds x="622" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0j09jzz_di" bpmnElement="EndEvent_0j09jzz">
+        <dc:Bounds x="905" y="81" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="499" y="-7" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0w5iwrp_di" bpmnElement="ExclusiveGateway_0w5iwrp" isMarkerVisible="true">
+        <dc:Bounds x="898" y="148" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="499" y="74" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_07xrq44_di" bpmnElement="ExclusiveGateway_07xrq44" isMarkerVisible="true">
+        <dc:Bounds x="898" y="349" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="797" y="360" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1i4rsri_di" bpmnElement="EndEvent_1i4rsri">
+        <dc:Bounds x="534" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="262" y="166" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_161rk16_di" bpmnElement="ExclusiveGateway_161rk16" isMarkerVisible="true">
+        <dc:Bounds x="527" y="349" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="262" y="275" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0v48kxn_di" bpmnElement="SequenceFlow_0v48kxn">
+        <di:waypoint x="552" y="444" />
+        <di:waypoint x="552" y="399" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="277" y="288.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0siqxi9_di" bpmnElement="SequenceFlow_0siqxi9">
+        <di:waypoint x="577" y="374" />
+        <di:waypoint x="672" y="374" />
+        <di:waypoint x="672" y="444" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="603" y="336" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_19psber_di" bpmnElement="SequenceFlow_19psber">
+        <di:waypoint x="948" y="173" />
+        <di:waypoint x="1046" y="173" />
+        <di:waypoint x="1046" y="241" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="989" y="155" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0q02aax_di" bpmnElement="SequenceFlow_0q02aax">
+        <di:waypoint x="1046" y="321" />
+        <di:waypoint x="1046" y="444" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="637" y="249.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1t7fckq_di" bpmnElement="SequenceFlow_1t7fckq">
+        <di:waypoint x="923" y="148" />
+        <di:waypoint x="923" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="932" y="128" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_040i3an_di" bpmnElement="SequenceFlow_040i3an">
+        <di:waypoint x="923" y="241" />
+        <di:waypoint x="923" y="198" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="514" y="86.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1obbhxp_di" bpmnElement="SequenceFlow_1obbhxp">
+        <di:waypoint x="923" y="349" />
+        <di:waypoint x="923" y="321" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="932" y="329" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1y89xhd_di" bpmnElement="SequenceFlow_1y89xhd">
+        <di:waypoint x="923" y="444" />
+        <di:waypoint x="923" y="399" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="514" y="288.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1dgur3f_di" bpmnElement="SequenceFlow_1dgur3f">
+        <di:waypoint x="948" y="374" />
+        <di:waypoint x="1046" y="374" />
+        <di:waypoint x="1046" y="444" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="990" y="353" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_17iyg64_di" bpmnElement="SequenceFlow_17iyg64">
+        <di:waypoint x="552" y="349" />
+        <di:waypoint x="552" y="278" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="492" y="325" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0uh8j62_di" bpmnElement="ExclusiveGateway_0uh8j62" isMarkerVisible="true">
+        <dc:Bounds x="1433" y="360" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="937" y="286" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_04gup6i_di" bpmnElement="SequenceFlow_04gup6i">
+        <di:waypoint x="1720" y="484" />
+        <di:waypoint x="1754" y="484" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1250" y="331" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1c97sgs_di" bpmnElement="SequenceFlow_1c97sgs">
+        <di:waypoint x="1458" y="444" />
+        <di:waypoint x="1458" y="410" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="952" y="293" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1m8j6rq_di" bpmnElement="SequenceFlow_1m8j6rq">
+        <di:waypoint x="1458" y="360" />
+        <di:waypoint x="1458" y="281" />
+        <di:waypoint x="1543" y="281" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1382" y="294" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0p6fi9t_di" bpmnElement="SequenceFlow_0p6fi9t">
+        <di:waypoint x="1483" y="385" />
+        <di:waypoint x="1543" y="385" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1463" y="352" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1t4wsb4_di" bpmnElement="SequenceFlow_1t4wsb4">
+        <di:waypoint x="1643" y="281" />
+        <di:waypoint x="1670" y="281" />
+        <di:waypoint x="1670" y="444" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1086" y="132" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1up24zl_di" bpmnElement="SequenceFlow_1up24zl">
+        <di:waypoint x="1643" y="385" />
+        <di:waypoint x="1670" y="385" />
+        <di:waypoint x="1670" y="444" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1136" y="301.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1upne06_di" bpmnElement="ExclusiveGateway_1upne06" isMarkerVisible="true">
+        <dc:Bounds x="2236" y="304" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1830" y="384" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1nm3qke_di" bpmnElement="ExclusiveGateway_1nm3qke" isMarkerVisible="true">
+        <dc:Bounds x="1882" y="459" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1581" y="384" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ManualTask_00da5a3_di" bpmnElement="ManualTask_00da5a3">
+        <dc:Bounds x="2093" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0fgld5j_di" bpmnElement="EndEvent_0fgld5j">
+        <dc:Bounds x="2339" y="464" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2027" y="377" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_17otxkt_di" bpmnElement="SequenceFlow_17otxkt">
+        <di:waypoint x="2261" y="354" />
+        <di:waypoint x="2261" y="442" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2277" y="358" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1nrixbe_di" bpmnElement="SequenceFlow_1nrixbe">
+        <di:waypoint x="2193" y="482" />
+        <di:waypoint x="2211" y="482" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1854.5" y="143" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1721lrq_di" bpmnElement="SequenceFlow_1721lrq">
+        <di:waypoint x="2311" y="482" />
+        <di:waypoint x="2339" y="482" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1997" y="334" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_18ir4r6_di" bpmnElement="SequenceFlow_18ir4r6">
+        <di:waypoint x="1907" y="631" />
+        <di:waypoint x="1907" y="654" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1596" y="508.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_07zwwuj_di" bpmnElement="SequenceFlow_07zwwuj">
+        <di:waypoint x="1907" y="509" />
+        <di:waypoint x="1907" y="551" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1923" y="517" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_005g394_di" bpmnElement="SequenceFlow_005g394">
+        <di:waypoint x="1907" y="459" />
+        <di:waypoint x="1907" y="329" />
+        <di:waypoint x="1976" y="329" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1852" y="394" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_01jg7t8_di" bpmnElement="SequenceFlow_01jg7t8">
+        <di:waypoint x="1932" y="484" />
+        <di:waypoint x="1969" y="484" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1911" y="448" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ympmzt_di" bpmnElement="SequenceFlow_1ympmzt">
+        <di:waypoint x="1854" y="485" />
+        <di:waypoint x="1882" y="484" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1424.5" y="334.5" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1onnlc8_di" bpmnElement="SequenceFlow_1onnlc8">
+        <di:waypoint x="220" y="484" />
+        <di:waypoint x="248" y="484" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1temyhu_di" bpmnElement="Task_Teilenummereingeben" bioc:stroke="#E53935" bioc:fill="#FFCDD2">
+        <dc:Bounds x="248" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_10pp17d_di" bpmnElement="SequenceFlow_10pp17d" bioc:stroke="#E53935" bioc:fill="#FFCDD2">
+        <di:waypoint x="348" y="484" />
+        <di:waypoint x="379" y="484" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_177nr6o_di" bpmnElement="SequenceFlow_177nr6o">
+        <di:waypoint x="479" y="484" />
+        <di:waypoint x="503" y="484" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0elcylj_di" bpmnElement="Task_Datenbankabfragen" bioc:stroke="#E53935" bioc:fill="#FFCDD2">
+        <dc:Bounds x="379" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_14gwv5e_di" bpmnElement="ManualTask_KanBanPruefung">
+        <dc:Bounds x="503" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1obvkjt_di" bpmnElement="SequenceFlow_1obvkjt">
+        <di:waypoint x="722" y="484" />
+        <di:waypoint x="747" y="484" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0cxh3o2_di" bpmnElement="SequenceFlow_0cxh3o2">
+        <di:waypoint x="847" y="484" />
+        <di:waypoint x="873" y="484" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1yyfjuv_di" bpmnElement="Task_losgroesseabfragen" bioc:stroke="#E53935" bioc:fill="#FFCDD2">
+        <dc:Bounds x="747" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0k9rhcq_di" bpmnElement="Task_losgroessepruefen">
+        <dc:Bounds x="873" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1dhekt3_di" bpmnElement="Task_Verpackung">
+        <dc:Bounds x="873" y="241" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_16izd3l_di" bpmnElement="Task_Kanbanart">
+        <dc:Bounds x="996" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BusinessRuleTask_1iyxhm1_di" bpmnElement="Task_0dz7s5l" bioc:stroke="#E53935" bioc:fill="#FFCDD2">
+        <dc:Bounds x="1269" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0aaysvz_di" bpmnElement="SequenceFlow_0aaysvz">
+        <di:waypoint x="1369" y="484" />
+        <di:waypoint x="1408" y="484" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0v0zcc6_di" bpmnElement="UserTask_0wjvv4c">
+        <dc:Bounds x="1408" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_08kbcsu_di" bpmnElement="Task_0717n0u">
+        <dc:Bounds x="1543" y="241" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1e8xh06_di" bpmnElement="Task_1plhske">
+        <dc:Bounds x="1543" y="345" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_09cvhmo_di" bpmnElement="ManualTask_0vzt72y">
+        <dc:Bounds x="1620" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0rlsqje_di" bpmnElement="Task_0k85mrn">
+        <dc:Bounds x="1754" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_00npfk6_di" bpmnElement="SequenceFlow_00npfk6">
+        <di:waypoint x="1957" y="694" />
+        <di:waypoint x="2261" y="694" />
+        <di:waypoint x="2261" y="522" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1gnsspg_di" bpmnElement="Task_01wztrt">
+        <dc:Bounds x="1969" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ManualTask_0bxrn34_di" bpmnElement="Task_1t2gu1u">
+        <dc:Bounds x="1857" y="551" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ManualTask_1j69ycm_di" bpmnElement="Task_19hyx7s">
+        <dc:Bounds x="1857" y="654" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0plavaa_di" bpmnElement="Task_0f279vt">
+        <dc:Bounds x="2211" y="442" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ManualTask_0lebarl_di" bpmnElement="Task_VerpackungAnpassen">
+        <dc:Bounds x="996" y="241" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0wu81g3_di" bpmnElement="SequenceFlow_0wu81g3">
+        <di:waypoint x="2069" y="484" />
+        <di:waypoint x="2093" y="484" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1652.5" y="143" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0s59bvp_di" bpmnElement="UserTask_0s59bvp">
+        <dc:Bounds x="1136" y="444" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_17m7dx9_di" bpmnElement="SequenceFlow_17m7dx9">
+        <di:waypoint x="1236" y="484" />
+        <di:waypoint x="1269" y="484" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1oadbps_di" bpmnElement="SequenceFlow_1oadbps">
+        <di:waypoint x="2261" y="304" />
+        <di:waypoint x="2261" y="205" />
+        <di:waypoint x="1186" y="205" />
+        <di:waypoint x="1186" y="444" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2126" y="273" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jl451u_di" bpmnElement="SequenceFlow_0jl451u">
+        <di:waypoint x="1096" y="484" />
+        <di:waypoint x="1136" y="484" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="753.5" y="335" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1d76qva_di" bpmnElement="UserTask_1d76qva">
+        <dc:Bounds x="1977" y="289" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0do4do3_di" bpmnElement="SequenceFlow_0do4do3">
+        <di:waypoint x="2077" y="329" />
+        <di:waypoint x="2236" y="329" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

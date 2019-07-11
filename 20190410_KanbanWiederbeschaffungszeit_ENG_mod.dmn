@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:camunda="http://camunda.org/schema/1.0/dmn" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" id="Definitions_1tz1jc2" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.0.1">
+  <decision id="kanban_replenishment_time" name="KanbanReplenishmentTime">
+    <extensionElements>
+      <biodi:bounds x="150" y="150" width="180" height="80" />
+      <biodi:edge source="InputData_07kos5r">
+        <biodi:waypoints x="490" y="367" />
+        <biodi:waypoints x="297" y="230" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredInput href="#InputData_07kos5r" />
+    </informationRequirement>
+    <decisionTable id="decisionTable_1">
+      <input id="input_1" label="FormField_Kanbanart" camunda:inputVariable="FormField_Kanbanart">
+        <inputExpression id="inputExpression_1" typeRef="string">
+          <text>FormField_Kanbanart</text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="Wiederbeschaffungszeit_Kanban" name="wiederbeschaffungszeitKanban" typeRef="long" />
+      <rule id="DecisionRule_1hnq8d3">
+        <inputEntry id="UnaryTests_0c7cpre">
+          <text>'Value_KanbanE'</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0iolemr">
+          <text>FormField_Information_Transmission+
+FormField_Post_Production+FormField_Transport</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_18hfs5q">
+        <inputEntry id="UnaryTests_1q0pfzd">
+          <text>'Value_KanbanB'</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1d2jkeg">
+          <text>(FormField_Information_Transmission+
+FormField_Post_Production+FormField_Transport) * 2</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1jkr7iy">
+        <inputEntry id="UnaryTests_0u2nhzb">
+          <text>'Value_KanbanK'</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_12gwldh">
+          <text>(FormField_Information_Transmission+
+FormField_Post_Production+FormField_Transport) * 2</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_00u5w67">
+        <inputEntry id="UnaryTests_0wei8z5">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0eixy0h">
+          <text></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="Decision_1kufej3">
+    <extensionElements>
+      <biodi:bounds x="444" y="147" width="180" height="80" />
+      <biodi:edge source="kanban_replenishment_time">
+        <biodi:waypoints x="330" y="189" />
+        <biodi:waypoints x="444" y="188" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#kanban_replenishment_time" />
+    </informationRequirement>
+  </decision>
+  <knowledgeSource id="KnowledgeSource_15zmsfn">
+    <extensionElements>
+      <biodi:bounds x="452" y="250" width="100" height="63" />
+      <biodi:edge source="kanban_replenishment_time">
+        <biodi:waypoints x="330" y="222" />
+        <biodi:waypoints x="452" y="264" />
+      </biodi:edge>
+    </extensionElements>
+    <authorityRequirement>
+      <requiredDecision href="#kanban_replenishment_time" />
+    </authorityRequirement>
+  </knowledgeSource>
+  <inputData id="InputData_07kos5r">
+    <extensionElements>
+      <biodi:bounds x="460" y="367" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+  <businessKnowledgeModel id="BusinessKnowledgeModel_11bnde9">
+    <extensionElements>
+      <biodi:bounds x="301" y="412" width="135" height="46" />
+    </extensionElements>
+  </businessKnowledgeModel>
+</definitions>
